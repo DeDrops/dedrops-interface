@@ -196,9 +196,9 @@ export default function NFTDetail({ data }) {
                           {nftDetail.nftCount}
                         </span>
 
-                        {data.key && (
+                        {nftDetail.key && (
                           <span className="mt-2 text-xs font-semibold inline-block py-1 px-2  rounded text-orange-600 bg-orange-200">
-                            {data.tag}
+                            {nftDetail.tag}
                           </span>
                         )}
                       </blockquote>

@@ -19,6 +19,10 @@ export const tabList = [
 
 export const mintConditions = [
   {
+    key: "sushi-swap",
+    text: "Sushiswap 交易",
+  },
+  {
     key: "uniswap-swap",
     text: "Uniswap 交易",
   },

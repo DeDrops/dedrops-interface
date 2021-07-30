@@ -1,8 +1,8 @@
 export const tabList = [
-  {
-    key: "overview",
-    text: "概览",
-  },
+  //   {
+  //     key: "overview",
+  //     text: "概览",
+  //   },
   {
     key: "ongoing",
     text: "正在进行",
@@ -26,10 +26,10 @@ export const tableHeads = [
     key: "project",
     text: "空投项目",
   },
-  {
-    key: "participatedAddrCount",
-    text: "参与地址数",
-  },
+  //   {
+  //     key: "participatedAddrCount",
+  //     text: "参与地址数",
+  //   },
   {
     key: "totalAirdropAddrCount",
     text: "空投地址总数",

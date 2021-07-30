@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-target-blank */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 import IndexNavbar from "components/Navbars/IndexNavbar.js";
@@ -9,7 +9,19 @@ import AirdropsCardTable from "components/Cards/CardAirdropsTable";
 import Footer from "components/Footers/Footer.js";
 import { tabList } from "libs/airdropConfig";
 
-const renderTabsContent = (tabKey, setOpenTab) => {
+import { AirdropContract } from "libs/contracts";
+
+import { useWeb3React } from "@web3-react/core";
+
+import _ from "lodash";
+
+import useContract from "hooks/useContract";
+import { Airdrop as AirdropContractABI } from "constans/abi/Airdrop";
+import { Bank1155 as Bank1155ABI } from "constans/abi/Bank1155";
+
+import { parseBN } from "libs/web3Util";
+
+const renderTabsContent = (tabKey, setOpenTab, airdropList) => {
   const moreBtn = (tabKey) => {
     return (
       <a
@@ -28,45 +40,160 @@ const renderTabsContent = (tabKey, setOpenTab) => {
   };
 
   return tabList.map((item) => {
-    if (item.key === "overview") {
-      return (
-        <div
-          className={tabKey === "overview" ? "block" : "hidden"}
-          key={item.key}
-          id={item.key}
-        >
-          <div className="flex flex-wrap items-center pt-2">
-            <div className="w-full md:w-6/12 px-4">
-              <AirdropsCardTable typeKey="ongoing" />
-              {moreBtn("ongoing")}
-            </div>
-            <div className="w-full md:w-6/12 px-4">
-              <AirdropsCardTable typeKey="upcoming" />
-              {moreBtn("upcoming")}
-            </div>
+    // if (item.key === "overview") {
+    //   return (
+    //     <div
+    //       className={tabKey === "overview" ? "block" : "hidden"}
+    //       key={item.key}
+    //       id={item.key}
+    //     >
+    //       <div className="flex flex-wrap  pt-2">
+    //         <div className="w-full md:w-6/12 px-4">
+    //           <AirdropsCardTable typeKey="ongoing" list={airdropList} />
+    //           {moreBtn("ongoing")}
+    //         </div>
+    //         <div className="w-full md:w-6/12 px-4">
+    //           <AirdropsCardTable typeKey="upcoming" />
+    //           {moreBtn("upcoming")}
+    //         </div>
+    //       </div>
+    //     </div>
+    //   );
+    // } else {
+    return (
+      <div
+        className={tabKey === item.key ? "block" : "hidden"}
+        key={item.key}
+        id={item.key}
+      >
+        <div className="flex flex-wrap items-center pt-2">
+          <div className="w-full px-4">
+            <AirdropsCardTable
+              typeKey={item.key}
+              list={item.key === "ongoing" ? airdropList : []}
+            />
           </div>
         </div>
-      );
-    } else {
-      return (
-        <div
-          className={tabKey === item.key ? "block" : "hidden"}
-          key={item.key}
-          id={item.key}
-        >
-          <div className="flex flex-wrap items-center pt-2">
-            <div className="w-full px-4">
-              <AirdropsCardTable typeKey={item.key} />
-            </div>
-          </div>
-        </div>
-      );
-    }
+      </div>
+    );
+    // }
   });
 };
 
 export default function Index() {
-  const [openTab, setOpenTab] = React.useState("overview");
+  const { library, account } = useWeb3React();
+
+  const [openTab, setOpenTab] = useState("ongoing");
+
+  const [airdropList, setAirdropList] = useState([]);
+
+  // airdrop contract instance
+  const AirdropContractInstance = useContract(
+    AirdropContract,
+    AirdropContractABI,
+    account
+  );
+
+  const airdropDetailInitInfoState = {};
+
+  const airdropDetailInitInfo2State = {};
+
+  async function getAirdropDetail(id) {
+    const airdropData = await AirdropContractInstance.idToItem(id);
+
+    console.log("airdropData", id, airdropData);
+
+    try {
+      const airdropDataInfo = airdropData.info
+        ? JSON.parse(airdropData.info)
+        : airdropDetailInitInfoState;
+      const airdropDataInfo2 = airdropData.info2
+        ? JSON.parse(airdropData.info2)
+        : airdropDetailInitInfo2State;
+
+      console.log(id, {
+        id: id,
+        ...airdropDataInfo,
+        ...airdropDataInfo2,
+      });
+
+      return {
+        id: id,
+        ...airdropDataInfo,
+        ...airdropDataInfo2,
+      };
+    } catch (e) {
+      console.log("error");
+    }
+
+    // nft 已领取数量
+    // let claimedCount = await bank1155Contract.tokenUserBalance(
+    //   NFTMintContract,
+    //   nftID,
+    //   account
+    // );
+
+    // // console.log("claimedCount", parseBN(claimedCount));
+    // claimedCount = parseBN(claimedCount);
+
+    // if (nftDataInfo.imgUrl === "") {
+    //   nftDataInfo.imgUrl =
+    //     "https://miro.medium.com/max/1400/1*PfyeIplM0nkWwiGgkrYCUQ.png";
+    // }
+
+    // console.log(nftID, {
+    //   ...nftDataInfo,
+    //   ...nftDataCondition,
+    //   claimedCount,
+    // });
+
+    // if (nftData.info === "" || nftData.info2 === "") {
+    //   // 信息不全，不显示
+    //   return;
+    // } else {
+    //   //add to nft detail list
+    //   // setNftDetailList([
+    //   //   ...nftDetailList,
+    //   //   {
+    //   //     id: nftID,
+    //   //     ...nftDataInfo,
+    //   //     ...nftDataCondition,
+    //   //     claimedCount,
+    //   //   },
+    //   // ]);
+
+    //   return {
+    //     id: nftID,
+    //     ...nftDataInfo,
+    //     ...nftDataCondition,
+    //     claimedCount,
+    //   };
+  }
+
+  useEffect(() => {
+    (async () => {
+      if (AirdropContractInstance) {
+        // console.log(nftContract);
+        let AirdropCount = await AirdropContractInstance.length();
+        AirdropCount = parseBN(AirdropCount);
+        console.log("AirdropCount", AirdropCount);
+
+        if (AirdropCount > 0) {
+          for (const i of _.range(1, AirdropCount + 1)) {
+            console.log("airdrop ", i);
+            const detail = await getAirdropDetail(i);
+            if (detail) {
+              airdropList.push(detail);
+            }
+          }
+
+          console.log("airdropList", airdropList);
+
+          setAirdropList([...airdropList]);
+        }
+      }
+    })();
+  }, [AirdropContractInstance, account]);
 
   return (
     <>
@@ -80,7 +207,7 @@ export default function Index() {
             <div className="relative flex flex-col min-w-0 break-words  w-full mb-6  rounded">
               <div className="flex-auto">
                 <div className="tab-content tab-space">
-                  {renderTabsContent(openTab, setOpenTab)}
+                  {renderTabsContent(openTab, setOpenTab, airdropList)}
                 </div>
               </div>
             </div>

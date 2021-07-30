@@ -50,7 +50,7 @@ const renderTableHead = (typeKey, TableHead) => {
   return (
     <th
       key={TableHead.key}
-      className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-blueGray-50 text-blueGray-500 border-blueGray-100"
+      className="px-6 align-middle border border-solid py-3 text-sm uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-blueGray-50 text-blueGray-500 border-blueGray-100"
     >
       {TableHead.text}
     </th>
@@ -63,33 +63,33 @@ const renderTableData = (typeKey, rowData, index) => {
       key={index}
       className="hover:bg-blueGray-600 hover:text-white cursor-pointer"
     >
-      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-        {rowData.project}
+      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
+        {rowData.name}
       </td>
-      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+      {/* <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
         {rowData.participatedAddrCount}
+      </td> */}
+      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm wπitespace-nowrap p-4">
+        {rowData.airdrop.tokenClaimableCount}
       </td>
-      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs wπitespace-nowrap p-4">
-        {rowData.totalAirdropAddrCount}
-      </td>
-      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-        {rowData.totalAirdropAmount}
+      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
+        {rowData.airdrop.tokenAmount}
       </td>
       {typeKey !== "ongoing" ? (
-        <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-          {rowData.startTime}
+        <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
+          {rowData.airdrop.startTime}
         </td>
       ) : null}
       {typeKey !== "upcoming" ? (
-        <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-          {rowData.endTime}
+        <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
+          {rowData.airdrop.endTime}
         </td>
       ) : null}
     </tr>
   );
 };
 
-export default function AirdropsCardTable({ color, typeKey }) {
+export default function AirdropsCardTable({ color, typeKey, list }) {
   return (
     <>
       <div
@@ -117,9 +117,7 @@ export default function AirdropsCardTable({ color, typeKey }) {
               </tr>
             </thead>
             <tbody>
-              {fakeData.map((data, index) =>
-                renderTableData(typeKey, data, index)
-              )}
+              {list.map((data, index) => renderTableData(typeKey, data, index))}
             </tbody>
           </table>
         </div>
@@ -131,6 +129,7 @@ export default function AirdropsCardTable({ color, typeKey }) {
 AirdropsCardTable.defaultProps = {
   color: "light",
   typeKey: "",
+  list: [],
 };
 
 AirdropsCardTable.propTypes = {
