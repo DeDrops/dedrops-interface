@@ -10,11 +10,11 @@ export default function CardNFTItem({ data }) {
         <Link href={"/nft/" + data.id}>
           <div className="h-full cursor-pointer relative flex flex-col min-w-0 break-words w-full mb-6 shadow-md rounded-lg ease-linear transition-all duration-150 hover:shadow-lg">
             <span className="absolute top-0 right-0 text-xs font-semibold inline-block py-1 px-2  rounded text-emerald-600 bg-emerald-200">
-              已领取/总数: {data.claimed} / {data.total}
+              已领取/总数: {data.claimedCount} / {data.nftCount}
             </span>
             <img
               alt=""
-              src={data.img}
+              src={data.imgUrl}
               className="object-cover h-48 w-full align-middle rounded-t-lg"
             />
             <blockquote className="relative p-8">

@@ -43,7 +43,7 @@ export default function CardNFTMint() {
     const mintInfo = {
       name: nftName.current.value,
       imgUrl: nftImgUrl.current.value,
-      desc: nftDesc,
+      desc: nftDesc.current.value,
       nftCount: nftCount.current.value,
     };
 
@@ -68,8 +68,8 @@ export default function CardNFTMint() {
     // 提交上链
     const res = await mintContract.mint(
       toAmount(nftCount.current.value),
-      mintInfo,
-      condition
+      JSON.stringify(mintInfo),
+      JSON.stringify(condition)
     );
     console.log(res);
   };
@@ -280,7 +280,7 @@ export default function CardNFTMint() {
                     <input
                       ref={nftMoneyCheckbox}
                       type="checkbox"
-                      class="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
+                      className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
                     ></input>
                     链上资产
                   </label>

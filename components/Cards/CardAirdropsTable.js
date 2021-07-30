@@ -135,5 +135,5 @@ AirdropsCardTable.defaultProps = {
 
 AirdropsCardTable.propTypes = {
   color: PropTypes.oneOf(["light", "dark"]),
-  typeKey: PropTypes.oneOf(tabListKeys),
+  typeKey: PropTypes.oneOf(["", ...tabListKeys]),
 };

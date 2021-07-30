@@ -65,7 +65,7 @@ export function big(num) {
   return BigNumber.from(num);
 }
 
-export function number(bn) {
+export function parseBN(bn) {
   return bn.toNumber();
 }
 

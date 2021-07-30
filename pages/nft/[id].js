@@ -1,74 +1,102 @@
 /* eslint-disable react/jsx-no-target-blank */
-import React from "react";
-import Link from "next/link";
+import React, { useRef, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+
+import { mintConditions } from "libs/nftConfig";
 
 import IndexNavbar from "components/Navbars/IndexNavbar.js";
-import AirdropsTabs from "components/Tabs/AirdropsTabs";
 import AirdropsCardTable from "components/Cards/CardAirdropsTable";
 
 import { fakeData } from "libs/nftConfig";
 
 import Footer from "components/Footers/Footer.js";
-import { tabList } from "libs/airdropConfig";
 
-const renderTabsContent = (tabKey, setOpenTab) => {
-  const moreBtn = (tabKey) => {
-    return (
-      <a
-        onClick={(e) => {
-          e.preventDefault();
-          setOpenTab(tabKey);
-        }}
-        data-toggle="tab"
-        href={`#${tabKey}`}
-        role="tablist"
-        className="font-bold text-blueGray-700 hover:text-blueGray-500 ease-linear transition-all duration-150"
-      >
-        更多 <i className="fa fa-angle-double-right ml-1 leading-relaxed"></i>
-      </a>
-    );
-  };
+import { Bank1155Contract, NFTMintContract } from "libs/contracts";
+import { useWeb3React } from "@web3-react/core";
 
-  return tabList.map((item) => {
-    if (item.key === "overview") {
-      return (
-        <div
-          className={tabKey === "overview" ? "block" : "hidden"}
-          key={item.key}
-          id={item.key}
-        >
-          <div className="flex flex-wrap items-center pt-2">
-            <div className="w-full md:w-6/12 px-4">
-              <AirdropsCardTable typeKey="ongoing" />
-              {moreBtn("ongoing")}
-            </div>
-            <div className="w-full md:w-6/12 px-4">
-              <AirdropsCardTable typeKey="upcoming" />
-              {moreBtn("upcoming")}
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div
-          className={tabKey === item.key ? "block" : "hidden"}
-          key={item.key}
-          id={item.key}
-        >
-          <div className="flex flex-wrap items-center pt-2">
-            <div className="w-full px-4">
-              <AirdropsCardTable typeKey={item.key} />
-            </div>
-          </div>
-        </div>
-      );
-    }
-  });
-};
+import _ from "lodash";
+
+import useContract from "hooks/useContract";
+import { DeDropsNFT as mintContractABI } from "constans/abi/DeDropsNFT";
+import { Bank1155 as Bank1155ABI } from "constans/abi/Bank1155";
+import { parseBN } from "libs/web3Util";
 
 export default function NFTDetail({ data }) {
-  const [openTab, setOpenTab] = React.useState("overview");
+  const router = useRouter();
+
+  const nftID = router.query.id;
+
+  const imgRef = useRef();
+  const { library, account } = useWeb3React();
+
+  const nftDetailInitInfoState = {
+    name: "",
+    imgUrl: "",
+    desc: "",
+    nftCount: "",
+  };
+
+  const nftDetailInitInfo2State = {
+    actions: [],
+    money: "",
+  };
+
+  const [nftDetail, setNftDetail] = useState({
+    ...nftDetailInitInfoState,
+    ...nftDetailInitInfo2State,
+  });
+
+  // mint contract instance
+  const nftContract = useContract(NFTMintContract, mintContractABI, account);
+
+  // bank 1155 contract instance
+  const bank1155Contract = useContract(Bank1155Contract, Bank1155ABI, account);
+
+  useEffect(() => {
+    (async () => {
+      if (nftContract) {
+        // console.log(nftContract);
+        // const nftCount = await nftContract.length();
+        // console.log("nftCount", parseBN(nftCount));
+        const nftData = await nftContract.idToItem(nftID);
+
+        console.log("nftData", nftData);
+        const nftDataInfo = nftData.info
+          ? JSON.parse(nftData.info)
+          : nftDetailInitInfoState;
+        const nftDataCondition = nftData.info2
+          ? JSON.parse(nftData.info2)
+          : nftDetailInitInfo2State;
+
+        // nft 已领取数量
+        let claimedCount = await bank1155Contract.tokenUserBalance(
+          NFTMintContract,
+          nftID,
+          account
+        );
+
+        console.log("claimedCount", parseBN(claimedCount));
+        claimedCount = parseBN(claimedCount);
+
+        if (nftDataInfo.imgUrl === "") {
+          nftDataInfo.imgUrl =
+            "https://miro.medium.com/max/1400/1*PfyeIplM0nkWwiGgkrYCUQ.png";
+        }
+
+        console.log({
+          ...nftDataInfo,
+          ...nftDataCondition,
+          claimedCount,
+        });
+
+        setNftDetail({
+          ...nftDataInfo,
+          ...nftDataCondition,
+          claimedCount,
+        });
+      }
+    })();
+  }, [nftID, nftContract, account, bank1155Contract]);
 
   return (
     <>
@@ -87,30 +115,42 @@ export default function NFTDetail({ data }) {
 
                   <div className="mt-2">
                     <ul className="border border-blueGray-200 rounded-md divide-y divide-gray-200">
-                      <li className="pl-3 pr-4 py-4 flex items-center justify-between text-sm">
-                        <div className="w-0 flex-1 flex items-center">
-                          <span className="ml-2 flex-1 w-0 truncate">
-                            UNISWAP 交易，至少 1 次
-                          </span>
-                        </div>
-                        <div className="ml-4 flex-shrink-0">
-                          <span className="bg-emerald-500 text-white font-bold  text-xs px-4 py-2 rounded  outline-none mr-1 mb-1 ">
-                            满足
-                          </span>
-                        </div>
-                      </li>
-                      <li className="pl-3 pr-4 py-4 flex items-center justify-between text-sm">
-                        <div className="w-0 flex-1 flex items-center">
-                          <span className="ml-2 flex-1 w-0 truncate">
-                            UNISWAP 添加流动性，至少 1 次
-                          </span>
-                        </div>
-                        <div className="ml-4 flex-shrink-0">
-                          <span className="bg-red-500 text-white font-bold  text-xs px-4 py-2 rounded  outline-none mr-1 mb-1 ">
-                            不满足
-                          </span>
-                        </div>
-                      </li>
+                      {nftDetail.actions.map((item) => (
+                        <li
+                          key={item.key}
+                          className="pl-3 pr-4 py-4 flex items-center justify-between text-sm"
+                        >
+                          <div className="w-0 flex-1 flex items-center">
+                            <span className="ml-2 flex-1 w-0 truncate">
+                              {_.find(mintConditions, { key: item.key }).text}
+                              ，至少 {item.count} 次
+                            </span>
+                          </div>
+                          <div className="ml-4 flex-shrink-0">
+                            <span className="bg-emerald-500 text-white font-bold  text-xs px-4 py-2 rounded  outline-none mr-1 mb-1 ">
+                              满足
+                            </span>
+                          </div>
+                        </li>
+                      ))}
+
+                      {nftDetail.money && nftDetail.money > 0 ? (
+                        <li
+                          key="money"
+                          className="pl-3 pr-4 py-4 flex items-center justify-between text-sm"
+                        >
+                          <div className="w-0 flex-1 flex items-center">
+                            <span className="ml-2 flex-1 w-0 truncate">
+                              链上资产总额大于 {nftDetail.money} USD
+                            </span>
+                          </div>
+                          <div className="ml-4 flex-shrink-0">
+                            <span className="bg-emerald-500 text-white font-bold  text-xs px-4 py-2 rounded  outline-none mr-1 mb-1 ">
+                              满足
+                            </span>
+                          </div>
+                        </li>
+                      ) : null}
                     </ul>
                   </div>
 
@@ -140,18 +180,19 @@ export default function NFTDetail({ data }) {
                     <div className="bg-blueGray-200 h-600-px relative flex p-8 flex-col min-w-0 break-words w-full mb-6 shadow-md rounded-lg ease-linear transition-all duration-150 hover:shadow-lg">
                       <blockquote className="relative">
                         <h4 className="text-xl font-bold text-blueGray-600">
-                          {data.name}
+                          {nftDetail.name}
                         </h4>
 
-                        <a
+                        {/* <a
                           href="https://github.com/creativetimofficial/notus-nextjs/blob/main/LICENSE.md?ref=nnjs-footer"
                           className="text-xs font-semibold block py-1 px-2  rounded text-blueGray-200 bg-blueGray-400 mt-1"
                         >
                           智能合约: {data.contract}
-                        </a>
+                        </a> */}
 
                         <span className="text-xs font-semibold inline-block py-1 px-2  rounded text-emerald-600 bg-emerald-200 mr-2">
-                          已领取/总数: {data.claimed} / {data.total}
+                          已领取/总数: {nftDetail.claimedCount} /{" "}
+                          {nftDetail.nftCount}
                         </span>
 
                         {data.key && (
@@ -160,15 +201,14 @@ export default function NFTDetail({ data }) {
                           </span>
                         )}
                       </blockquote>
-
                       <img
                         alt=""
-                        src={data.img}
+                        ref={imgRef}
+                        src={nftDetail.imgUrl}
                         className="object-cover my-4 h-64 w-full align-middle"
                       />
-
                       <p className="text-md font-light my-2 text-blueGray-600">
-                        {data.desc}
+                        {nftDetail.desc}
                       </p>
                     </div>
                   </div>

@@ -1,28 +1,149 @@
 /* eslint-disable react/jsx-no-target-blank */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 import IndexNavbar from "components/Navbars/IndexNavbar.js";
 import NFTTabs from "components/Tabs/NFTTabs";
-import AirdropsCardTable from "components/Cards/CardAirdropsTable";
 import CardNFTItem from "components/Cards/CardNFTItem";
 
 import Footer from "components/Footers/Footer.js";
-import { tabList } from "libs/airdropConfig";
 import { fakeData } from "libs/nftConfig";
 
-const renderTabsContent = (tabKey) => {
-  if (tabKey === "all") {
-    return fakeData.map((data) => <CardNFTItem key={data.id} data={data} />);
-  } else {
-    const tagList = fakeData.filter((data) => data.key === tabKey);
-    console.log(tagList);
-    return tagList.map((data) => <CardNFTItem key={data.id} data={data} />);
-  }
-};
+import { NFTMintContract, Bank1155Contract } from "libs/contracts";
+import { useWeb3React } from "@web3-react/core";
+
+import _ from "lodash";
+
+import useContract from "hooks/useContract";
+import { DeDropsNFT as mintContractABI } from "constans/abi/DeDropsNFT";
+
+import { Bank1155 as Bank1155ABI } from "constans/abi/Bank1155";
+import { parseBN } from "libs/web3Util";
 
 export default function Index() {
+  const { library, account } = useWeb3React();
+
   const [openTab, setOpenTab] = React.useState("all");
+
+  const nftDetailInitInfoState = {
+    name: "",
+    imgUrl: "",
+    desc: "",
+    nftCount: "",
+  };
+
+  const nftDetailInitInfo2State = {
+    actions: [],
+    money: "",
+  };
+
+  const [nftDetailList, setNftDetailList] = useState([]);
+
+  // mint contract instance
+  const nftContract = useContract(NFTMintContract, mintContractABI, account);
+
+  // bank 1155 contract instance
+  const bank1155Contract = useContract(Bank1155Contract, Bank1155ABI, account);
+
+  async function getNftDetail(nftID) {
+    const nftData = await nftContract.idToItem(nftID);
+
+    // console.log("nftData", nftID, nftData);
+    const nftDataInfo = nftData.info
+      ? JSON.parse(nftData.info)
+      : nftDetailInitInfoState;
+    const nftDataCondition = nftData.info2
+      ? JSON.parse(nftData.info2)
+      : nftDetailInitInfo2State;
+
+    // nft 已领取数量
+    let claimedCount = await bank1155Contract.tokenUserBalance(
+      NFTMintContract,
+      nftID,
+      account
+    );
+
+    // console.log("claimedCount", parseBN(claimedCount));
+    claimedCount = parseBN(claimedCount);
+
+    if (nftDataInfo.imgUrl === "") {
+      nftDataInfo.imgUrl =
+        "https://miro.medium.com/max/1400/1*PfyeIplM0nkWwiGgkrYCUQ.png";
+    }
+
+    console.log(nftID, {
+      ...nftDataInfo,
+      ...nftDataCondition,
+      claimedCount,
+    });
+
+    if (nftData.info === "" || nftData.info2 === "") {
+      // 信息不全，不显示
+      return;
+    } else {
+      //add to nft detail list
+      // setNftDetailList([
+      //   ...nftDetailList,
+      //   {
+      //     id: nftID,
+      //     ...nftDataInfo,
+      //     ...nftDataCondition,
+      //     claimedCount,
+      //   },
+      // ]);
+
+      return {
+        id: nftID,
+        ...nftDataInfo,
+        ...nftDataCondition,
+        claimedCount,
+      };
+    }
+  }
+
+  const renderTabsContent = (tabKey) => {
+    console.log(nftDetailList);
+    if (tabKey === "all") {
+      return nftDetailList.map((data) => (
+        <CardNFTItem key={data.id} data={data} />
+      ));
+    } else {
+      const tagList = nftDetailList.filter((data) => data.key === tabKey);
+      return tagList.map((data) => <CardNFTItem key={data.id} data={data} />);
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (nftContract) {
+        // console.log(nftContract);
+        let nftCount = await nftContract.length();
+        nftCount = parseBN(nftCount);
+        console.log("nftCount", nftCount);
+
+        if (nftCount > 0) {
+          for (const i of _.range(1, nftCount + 1)) {
+            console.log("nft ", i);
+            const detail = await getNftDetail(i);
+            if (detail) {
+              nftDetailList.push(detail);
+              // setNftDetailList([...nftDetailList, detail]);
+            }
+          }
+
+          console.log("nftDetailList", nftDetailList);
+
+          setNftDetailList([...nftDetailList]);
+        }
+
+        // setNftDetail({
+        //   ...nftDataInfo,
+        //   ...nftDataCondition,
+        //   claimedCount,
+        // });
+      }
+    })();
+  }, [nftContract, account, bank1155Contract]);
 
   return (
     <>
@@ -37,6 +158,18 @@ export default function Index() {
               <div className="flex-auto">
                 <div className="tab-content tab-space">
                   <div className="flex flex-wrap">
+                    {/* loading */}
+                    {nftDetailList.length === 0 && (
+                      <div className="my-32 mx-auto max-w-sm text-center relative z-50 top-0">
+                        <div className="block mb-4">
+                          <i className="fas fa-circle-notch animate-spin text-blueGray-400 mx-auto text-6xl"></i>
+                        </div>
+                        <h4 className="text-lg font-medium text-blueGray-400">
+                          Loading...
+                        </h4>
+                      </div>
+                    )}
+
                     {renderTabsContent(openTab)}
                   </div>
                   {/* {renderTabsContent(openTab, setOpenTab)} */}
