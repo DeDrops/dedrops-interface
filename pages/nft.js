@@ -7,7 +7,6 @@ import NFTTabs from "components/Tabs/NFTTabs";
 import CardNFTItem from "components/Cards/CardNFTItem";
 
 import Footer from "components/Footers/Footer.js";
-import { fakeData } from "libs/nftConfig";
 
 import { NFTMintContract, Bank1155Contract } from "libs/contracts";
 import { useWeb3React } from "@web3-react/core";
@@ -81,17 +80,6 @@ export default function Index() {
       // 信息不全，不显示
       return;
     } else {
-      //add to nft detail list
-      // setNftDetailList([
-      //   ...nftDetailList,
-      //   {
-      //     id: nftID,
-      //     ...nftDataInfo,
-      //     ...nftDataCondition,
-      //     claimedCount,
-      //   },
-      // ]);
-
       return {
         id: nftID,
         ...nftDataInfo,
@@ -143,7 +131,7 @@ export default function Index() {
         // });
       }
     })();
-  }, [nftContract, account, bank1155Contract]);
+  }, [nftContract, account]);
 
   return (
     <>

@@ -69,6 +69,10 @@ export function parseBN(bn) {
   return bn.toNumber();
 }
 
+export function parseUnit(num, decimals = 18) {
+  return parseUnits(num, decimals);
+}
+
 export function toString(bn) {
   return bn.toString();
 }
