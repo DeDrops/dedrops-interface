@@ -115,24 +115,25 @@ export default function NFTDetail({ data }) {
 
                   <div className="mt-2">
                     <ul className="border border-blueGray-200 rounded-md divide-y divide-gray-200">
-                      {nftDetail.actions.map((item) => (
-                        <li
-                          key={item.key}
-                          className="pl-3 pr-4 py-4 flex items-center justify-between text-sm"
-                        >
-                          <div className="w-0 flex-1 flex items-center">
-                            <span className="ml-2 flex-1 w-0 truncate">
-                              {_.find(mintConditions, { key: item.key }).text}
-                              ，至少 {item.count} 次
-                            </span>
-                          </div>
-                          <div className="ml-4 flex-shrink-0">
-                            <span className="bg-emerald-500 text-white font-bold  text-xs px-4 py-2 rounded  outline-none mr-1 mb-1 ">
-                              满足
-                            </span>
-                          </div>
-                        </li>
-                      ))}
+                      {nftDetail.actions &&
+                        nftDetail.actions.map((item) => (
+                          <li
+                            key={item.key}
+                            className="pl-3 pr-4 py-4 flex items-center justify-between text-sm"
+                          >
+                            <div className="w-0 flex-1 flex items-center">
+                              <span className="ml-2 flex-1 w-0 truncate">
+                                {_.find(mintConditions, { key: item.key }).text}
+                                ，至少 {item.count} 次
+                              </span>
+                            </div>
+                            <div className="ml-4 flex-shrink-0">
+                              <span className="bg-emerald-500 text-white font-bold  text-xs px-4 py-2 rounded  outline-none mr-1 mb-1 ">
+                                满足
+                              </span>
+                            </div>
+                          </li>
+                        ))}
 
                       {nftDetail.money && nftDetail.money > 0 ? (
                         <li
