@@ -1,14 +1,106 @@
-import React from "react";
+import React, { useRef, useState } from "react";
+
+import { mintConditions } from "libs/nftConfig";
+import { NFTMintContract } from "libs/contracts";
+import { useWeb3React } from "@web3-react/core";
+
+import _ from "lodash";
+
+import useContract from "hooks/useContract";
+import { DeDropsNFT as mintContractABI } from "constans/abi/DeDropsNFT";
+import { toAmount } from "libs/web3Util";
 
 // components
 
 export default function CardNFTMint() {
+  const { library, account } = useWeb3React();
+
+  const nftName = useRef();
+  const nftCount = useRef();
+  const nftImgUrl = useRef();
+  const nftDesc = useRef();
+
+  // 链上条件
+  const nftOnChainConCheckbox = useRef();
+
+  const nftOnChainCon = useRef();
+
+  // 条件最小值
+  const nftOnChainConCount = useRef();
+
+  // 链上资产
+  const nftMoneyCheckbox = useRef();
+
+  const nftMoney = useRef();
+
+  // on-chain action conditions
+  const [onChainCon, setOnChainCon] = useState([]);
+
+  // mint contract instance
+  const mintContract = useContract(NFTMintContract, mintContractABI, account);
+
+  const handleSubmit = async () => {
+    const mintInfo = {
+      name: nftName.current.value,
+      imgUrl: nftImgUrl.current.value,
+      desc: nftDesc,
+      nftCount: nftCount.current.value,
+    };
+
+    const condition = {
+      actions: nftOnChainConCheckbox.current.checked ? onChainCon : null,
+      money: nftMoneyCheckbox.current.checked ? nftMoney.current.value : 0,
+    };
+
+    console.log(mintInfo);
+
+    // console.log(nftOnChainConCheckbox.current.checked);
+
+    console.log(condition);
+
+    // 要上链的数据
+    const data = {
+      amount: nftCount,
+      info: mintInfo,
+      info2: condition,
+    };
+
+    // 提交上链
+    const res = await mintContract.mint(
+      toAmount(nftCount.current.value),
+      mintInfo,
+      condition
+    );
+    console.log(res);
+  };
+
+  const handleAddOnChainAction = () => {
+    console.log(nftOnChainCon.current.value);
+
+    onChainCon.push({
+      key: nftOnChainCon.current.value,
+      count: nftOnChainConCount.current.value,
+    });
+
+    const newOnChainCon = _.unionBy(onChainCon, (item) => item.key);
+
+    console.log("newOnChainCon", newOnChainCon);
+    setOnChainCon(newOnChainCon);
+  };
+
+  const handleRemoveOnChainAction = (key) => {
+    console.log(key);
+    _.remove(onChainCon, (item) => item.key === key);
+    setOnChainCon([...onChainCon]);
+  };
+
   return (
     <>
       <div className="relative flex flex-col min-w-0 break-words w-full mb-6  rounded-lg bg-blueGray-100 border-0">
         <div className="rounded-t  mb-0 px-6 py-6">
           <div className="text-center flex justify-between">
             <h6 className="text-blueGray-700 text-xl font-bold">铸造 NFT</h6>
+            {account}
           </div>
         </div>
         <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
@@ -27,6 +119,7 @@ export default function CardNFTMint() {
                     NFT 名称
                   </label>
                   <input
+                    ref={nftName}
                     type="text"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   />
@@ -44,6 +137,7 @@ export default function CardNFTMint() {
                     NFT 图片
                   </label>
                   <input
+                    ref={nftImgUrl}
                     type="text"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   />
@@ -61,6 +155,7 @@ export default function CardNFTMint() {
                     NFT 描述
                   </label>
                   <textarea
+                    ref={nftDesc}
                     type="text"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     rows="4"
@@ -78,6 +173,7 @@ export default function CardNFTMint() {
                   NFT 铸造数量
                 </label>
                 <input
+                  ref={nftCount}
                   type="text"
                   className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 />
@@ -98,34 +194,40 @@ export default function CardNFTMint() {
                     htmlFor="grid-password"
                   >
                     <input
+                      ref={nftOnChainConCheckbox}
                       type="checkbox"
-                      class="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
+                      className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
                     ></input>
                     选择参与过的链上活动
                   </label>
 
                   <div className="flex flex-wrap">
                     <div className="lg:w-6/12">
-                      <select className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150">
-                        <option>UNISWAP 交易</option>
-                        <option>UNISWAP 添加流动性</option>
-                        <option>SUSHISWAP 治理</option>
-                        <option>Gitcoin Grant 捐赠</option>
-                        <option>参与 L2 Hackthon</option>
+                      <select
+                        ref={nftOnChainCon}
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                      >
+                        {mintConditions.map((item) => (
+                          <option key={item.key} value={item.key}>
+                            {item.text}
+                          </option>
+                        ))}
                       </select>
                     </div>
                     <div className="lg:w-2/12 px-4 flex items-center">
                       <input
+                        ref={nftOnChainConCount}
                         type="text"
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                         placeholder="至少交易次数"
                         defaultValue="1"
                       />
-                      <span class="px-2">次</span>
+                      <span className="px-2">次</span>
                     </div>
 
                     <div className="lg:w-2/12 px-4">
                       <button
+                        onClick={handleAddOnChainAction}
                         className="bg-blueGray-600 text-white active:bg-blueGray-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                         type="button"
                       >
@@ -141,36 +243,28 @@ export default function CardNFTMint() {
               <div className="w-full lg:w-12/12 px-4">
                 <div className="relative w-full mb-3">
                   <ul className="border border-blueGray-200 rounded-md divide-y divide-gray-200">
-                    <li className="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
-                      <div className="w-0 flex-1 flex items-center">
-                        <span className="ml-2 flex-1 w-0 truncate">
-                          UNISWAP 交易，至少 1 次
-                        </span>
-                      </div>
-                      <div className="ml-4 flex-shrink-0">
-                        <button
-                          className="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                          type="button"
-                        >
-                          删除
-                        </button>
-                      </div>
-                    </li>
-                    <li className="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
-                      <div className="w-0 flex-1 flex items-center">
-                        <span className="ml-2 flex-1 w-0 truncate">
-                          UNISWAP 添加流动性，至少 1 次
-                        </span>
-                      </div>
-                      <div className="ml-4 flex-shrink-0">
-                        <button
-                          className="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                          type="button"
-                        >
-                          删除
-                        </button>
-                      </div>
-                    </li>
+                    {onChainCon.map((item) => (
+                      <li
+                        key={item.key}
+                        className="pl-3 pr-4 py-3 flex items-center justify-between text-sm"
+                      >
+                        <div className="w-0 flex-1 flex items-center">
+                          <span className="ml-2 flex-1 w-0 truncate">
+                            {_.find(mintConditions, { key: item.key }).text}
+                            ，至少 {item.count} 次
+                          </span>
+                        </div>
+                        <div className="ml-4 flex-shrink-0">
+                          <button
+                            onClick={() => handleRemoveOnChainAction(item.key)}
+                            className="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                            type="button"
+                          >
+                            删除
+                          </button>
+                        </div>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -185,6 +279,7 @@ export default function CardNFTMint() {
                     htmlFor="grid-password"
                   >
                     <input
+                      ref={nftMoneyCheckbox}
                       type="checkbox"
                       class="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
                     ></input>
@@ -204,6 +299,7 @@ export default function CardNFTMint() {
                   </label>
                   <div className="flex  items-center">
                     <input
+                      ref={nftMoney}
                       type="text"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="主流资产总额"
@@ -220,6 +316,7 @@ export default function CardNFTMint() {
             <div className="w-full mt-6 lg:w-4/12 px-4">
               <div className="relative w-full mb-3">
                 <button
+                  onClick={handleSubmit}
                   className="bg-blueGray-700 text-white active:bg-blueGray-600 font-bold uppercase text-lg px-12 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                   type="button"
                 >

@@ -17,6 +17,29 @@ export const tabList = [
   },
 ];
 
+export const mintConditions = [
+  {
+    key: "uniswap-swap",
+    text: "Uniswap 交易",
+  },
+  {
+    key: "uniswap-addlp",
+    text: "Uniswap 添加流动性",
+  },
+  {
+    key: "sushi-gov",
+    text: "Sushi 治理",
+  },
+  {
+    key: "gitcoin-grant",
+    text: "Gitcoin grant 捐赠",
+  },
+  {
+    key: "l2-hack",
+    text: "参与 Layer2 Hackthon 2021",
+  },
+];
+
 export const fakeData = [
   {
     id: "0",
