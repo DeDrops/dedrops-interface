@@ -1,11 +1,23 @@
 import React from "react";
 import Link from "next/link";
 // components
+import Account from "components/Account";
+
+import { useWeb3React } from "@web3-react/core";
+import ETHBalance from "components/ETHBalance";
+import useEagerConnect from "hooks/useEagerConnect";
 
 // import IndexDropdown from "components/Dropdowns/IndexDropdown.js";
 
 export default function Navbar(props) {
   const [navbarOpen, setNavbarOpen] = React.useState(false);
+
+  const { account, library } = useWeb3React();
+
+  const triedToEagerConnect = useEagerConnect();
+
+  const isConnected = typeof account === "string" && !!library;
+
   return (
     <>
       <nav className="top-0 fixed z-50 w-full flex flex-wrap items-center justify-between px-2 py-3 navbar-expand-lg bg-white shadow">
@@ -58,7 +70,7 @@ export default function Navbar(props) {
                   className="text-blueGray-700 bg-blueGray-200 active:bg-blueGray-300 text-sm font-bold uppercase px-4 py-2 rounded-lg shadow hover:shadow-lg outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3 ease-linear transition-all duration-150"
                   type="button"
                 >
-                   0x37..c3
+                  <Account triedToEagerConnect={triedToEagerConnect} />
                 </button>
               </li>
             </ul>
