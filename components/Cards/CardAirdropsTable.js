@@ -46,24 +46,28 @@ const renderTableHead = (typeKey, TableHead) => {
   }
 
   return (
-    <th className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-blueGray-50 text-blueGray-500 border-blueGray-100">
+    <th
+      key={TableHead.key}
+      className="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-blueGray-50 text-blueGray-500 border-blueGray-100"
+    >
       {TableHead.text}
     </th>
   );
 };
 
-const renderTableData = (typeKey, rowData) => {
+const renderTableData = (typeKey, rowData, index) => {
   return (
-    <tr>
-      <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">
-        <span className="ml-3 font-bold text-blueGray-600">
-          {rowData.project}
-        </span>
-      </th>
+    <tr
+      key={index}
+      className="hover:bg-blueGray-600 hover:text-white cursor-pointer"
+    >
+      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+        {rowData.project}
+      </td>
       <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
         {rowData.participatedAddrCount}
       </td>
-      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs wπitespace-nowrap p-4">
         {rowData.totalAirdropAddrCount}
       </td>
       <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
@@ -108,7 +112,9 @@ export default function AirdropsCardTable({ color, typeKey }) {
               </tr>
             </thead>
             <tbody>
-              {fakeData.map((data) => renderTableData(typeKey, data))}
+              {fakeData.map((data, index) =>
+                renderTableData(typeKey, data, index)
+              )}
             </tbody>
           </table>
         </div>
