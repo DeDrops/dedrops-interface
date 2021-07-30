@@ -28,8 +28,10 @@ tabListKeys.splice(0, 1);
 // components
 
 const renderTitle = (typeKey) => {
-  const title = tabList.find((item) => item.key === typeKey).text;
-  return <h3 className="font-semibold text-lg text-blueGray-700">{title}</h3>;
+  if (typeKey) {
+    const title = tabList.find((item) => item.key === typeKey).text;
+    return <h3 className="font-semibold text-lg text-blueGray-700">{title}</h3>;
+  }
 };
 
 const renderTableHead = (typeKey, TableHead) => {
@@ -96,13 +98,16 @@ export default function AirdropsCardTable({ color, typeKey }) {
           (color === "light" ? "bg-white" : "bg-blueGray-700 text-white")
         }
       >
-        <div className="rounded-t mb-0 px-4 py-3 border-0">
-          <div className="flex flex-wrap items-center">
-            <div className="relative w-full px-4 max-w-full flex-grow flex-1">
-              {renderTitle(typeKey)}
+        {typeKey && (
+          <div className="rounded-t mb-0 px-4 py-3 border-0">
+            <div className="flex flex-wrap items-center">
+              <div className="relative w-full px-4 max-w-full flex-grow flex-1">
+                {renderTitle(typeKey)}
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
         <div className="block w-full overflow-x-auto">
           {/* Projects table */}
           <table className="items-center w-full bg-transparent border-collapse">
@@ -125,7 +130,7 @@ export default function AirdropsCardTable({ color, typeKey }) {
 
 AirdropsCardTable.defaultProps = {
   color: "light",
-  typeKey: "ongoing",
+  typeKey: "",
 };
 
 AirdropsCardTable.propTypes = {

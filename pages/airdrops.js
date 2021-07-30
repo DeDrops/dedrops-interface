@@ -72,7 +72,7 @@ export default function Index() {
     <>
       <IndexNavbar fixed />
 
-      <section className="header relative pt-32 items-center flex">
+      <section className="header relative pt-24 items-center flex">
         <div className="container mx-auto items-center flex flex-wrap">
           <div className="w-full px-4">
             <AirdropsTabs openTab={openTab} handleSetOpenTab={setOpenTab} />

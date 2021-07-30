@@ -6,7 +6,7 @@ export default function CardNFTItem({ data }) {
   return (
     data &&
     data.id && (
-      <div key={data.id} className="lg:w-3/12 px-4 mr-auto ml-auto">
+      <div key={data.id} className="lg:w-3/12 px-4">
         <Link href={"/nft/" + data.id}>
           <div className="h-full cursor-pointer relative flex flex-col min-w-0 break-words w-full mb-6 shadow-md rounded-lg ease-linear transition-all duration-150 hover:shadow-lg">
             <span className="absolute top-0 right-0 text-xs font-semibold inline-block py-1 px-2  rounded text-emerald-600 bg-emerald-200">

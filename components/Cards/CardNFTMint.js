@@ -140,7 +140,7 @@ export default function CardNFTMint() {
             <div className="flex flex-wrap">
               <div className="w-full lg:w-12/12 px-4">
                 <div className="relative w-full mb-3">
-                  <ul className="border border-white rounded-md divide-y divide-gray-200">
+                  <ul className="border border-blueGray-200 rounded-md divide-y divide-gray-200">
                     <li className="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                       <div className="w-0 flex-1 flex items-center">
                         <span className="ml-2 flex-1 w-0 truncate">
