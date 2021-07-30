@@ -49,7 +49,7 @@ export default function Index() {
 
       <section>
         <div className="container mx-auto">
-          <div className="flex flex-wrap justify-center bg-white shadow-xl rounded-lg py-4 px-12 relative z-10">
+          <div className="flex flex-wrap justify-center bg-white rounded-lg py-4 px-12 relative z-10">
             <div className="w-full text-center lg:w-8/12">
               <p className="text-4xl text-center mb-2">
                 <span role="img" aria-label="love">

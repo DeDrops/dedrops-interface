@@ -100,7 +100,6 @@ export default function CardNFTMint() {
         <div className="rounded-t  mb-0 px-6 py-6">
           <div className="text-center flex justify-between">
             <h6 className="text-blueGray-700 text-xl font-bold">铸造 NFT</h6>
-            {account}
           </div>
         </div>
         <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
@@ -201,8 +200,8 @@ export default function CardNFTMint() {
                     选择参与过的链上活动
                   </label>
 
-                  <div className="flex flex-wrap">
-                    <div className="lg:w-6/12">
+                  <div className="flex items-center">
+                    <div className="md:w-6/12">
                       <select
                         ref={nftOnChainCon}
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
@@ -214,7 +213,7 @@ export default function CardNFTMint() {
                         ))}
                       </select>
                     </div>
-                    <div className="lg:w-2/12 px-4 flex items-center">
+                    <div className="md:w-2/12 px-4 flex items-center">
                       <input
                         ref={nftOnChainConCount}
                         type="text"
@@ -225,7 +224,7 @@ export default function CardNFTMint() {
                       <span className="px-2">次</span>
                     </div>
 
-                    <div className="lg:w-2/12 px-4">
+                    <div className="md:w-2/12 px-4">
                       <button
                         onClick={handleAddOnChainAction}
                         className="bg-blueGray-600 text-white active:bg-blueGray-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
