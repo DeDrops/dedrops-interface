@@ -1,10 +1,5 @@
 import useContract from "./useContract";
-
-const ABI = [
-  "function balanceOf(address owner) view returns (uint)",
-  "function transfer(address to, uint amount)",
-  "event Transfer(address indexed from, address indexed to, uint amount)",
-];
+import { IERC20 as IERC20ABI } from "constans/abi/IERC20";
 
 /**
  * @name useERC20Contract
@@ -12,5 +7,5 @@ const ABI = [
  * @param {string} tokenAddress
  */
 export default function useERC20Contract(tokenAddress) {
-  return useContract(tokenAddress, ABI);
+  return useContract(tokenAddress, IERC20ABI);
 }
