@@ -123,12 +123,6 @@ export default function Index() {
 
           setNftDetailList([...nftDetailList]);
         }
-
-        // setNftDetail({
-        //   ...nftDataInfo,
-        //   ...nftDataCondition,
-        //   claimedCount,
-        // });
       }
     })();
   }, [nftContract, account]);

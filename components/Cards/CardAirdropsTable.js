@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import PropTypes from "prop-types";
 
 import { tabList } from "libs/airdropConfig";
@@ -59,33 +60,35 @@ const renderTableHead = (typeKey, TableHead) => {
 
 const renderTableData = (typeKey, rowData, index) => {
   return (
-    <tr
-      key={index}
-      className="hover:bg-blueGray-600 hover:text-white cursor-pointer"
-    >
-      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
-        {rowData.name}
-      </td>
-      {/* <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
+    <Link key={rowData.id} href={"/airdrops/" + rowData.id}>
+      <tr
+        key={index}
+        className="hover:bg-blueGray-600 hover:text-white cursor-pointer"
+      >
+        <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
+          {rowData.name}
+        </td>
+        {/* <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
         {rowData.participatedAddrCount}
       </td> */}
-      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm wπitespace-nowrap p-4">
-        {rowData.airdrop.tokenClaimableCount}
-      </td>
-      <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
-        {rowData.airdrop.tokenAmount}
-      </td>
-      {typeKey !== "ongoing" ? (
-        <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
-          {rowData.airdrop.startTime}
+        <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm wπitespace-nowrap p-4">
+          {rowData.airdrop.tokenClaimableCount}
         </td>
-      ) : null}
-      {typeKey !== "upcoming" ? (
         <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
-          {rowData.airdrop.endTime}
+          {rowData.airdrop.tokenAmount}
         </td>
-      ) : null}
-    </tr>
+        {typeKey !== "ongoing" ? (
+          <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
+            {rowData.airdrop.startTime}
+          </td>
+        ) : null}
+        {typeKey !== "upcoming" ? (
+          <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-sm whitespace-nowrap p-4">
+            {rowData.airdrop.endTime}
+          </td>
+        ) : null}
+      </tr>
+    </Link>
   );
 };
 
@@ -117,7 +120,21 @@ export default function AirdropsCardTable({ color, typeKey, list }) {
               </tr>
             </thead>
             <tbody>
-              {list.map((data, index) => renderTableData(typeKey, data, index))}
+              {list.length > 0 ? (
+                list.map((data, index) => renderTableData(typeKey, data, index))
+              ) : (
+                <td
+                  colSpan="5"
+                  className="my-32 mx-auto py-12 max-w-sm text-center relative z-50 top-0"
+                >
+                  <div className="block mb-4">
+                    <i className="fas fa-circle-notch animate-spin text-blueGray-400 mx-auto text-6xl"></i>
+                  </div>
+                  <h4 className="text-lg font-medium text-blueGray-400">
+                    Loading...
+                  </h4>
+                </td>
+              )}
             </tbody>
           </table>
         </div>

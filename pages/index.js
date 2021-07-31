@@ -9,13 +9,13 @@ import AirdropsCardTable from "components/Cards/CardAirdropsTable";
 import Footer from "components/Footers/Footer.js";
 import { tabList } from "libs/airdropConfig";
 
-import { AirdropContract } from "libs/contracts";
-
 import { useWeb3React } from "@web3-react/core";
 
 import _ from "lodash";
 
 import useContract from "hooks/useContract";
+import { AirdropContract } from "libs/contracts";
+
 import { Airdrop as AirdropContractABI } from "constans/abi/Airdrop";
 import { Bank1155 as Bank1155ABI } from "constans/abi/Bank1155";
 
@@ -125,49 +125,6 @@ export default function Index() {
     } catch (e) {
       console.log("error");
     }
-
-    // nft 已领取数量
-    // let claimedCount = await bank1155Contract.tokenUserBalance(
-    //   NFTMintContract,
-    //   nftID,
-    //   account
-    // );
-
-    // // console.log("claimedCount", parseBN(claimedCount));
-    // claimedCount = parseBN(claimedCount);
-
-    // if (nftDataInfo.imgUrl === "") {
-    //   nftDataInfo.imgUrl =
-    //     "https://miro.medium.com/max/1400/1*PfyeIplM0nkWwiGgkrYCUQ.png";
-    // }
-
-    // console.log(nftID, {
-    //   ...nftDataInfo,
-    //   ...nftDataCondition,
-    //   claimedCount,
-    // });
-
-    // if (nftData.info === "" || nftData.info2 === "") {
-    //   // 信息不全，不显示
-    //   return;
-    // } else {
-    //   //add to nft detail list
-    //   // setNftDetailList([
-    //   //   ...nftDetailList,
-    //   //   {
-    //   //     id: nftID,
-    //   //     ...nftDataInfo,
-    //   //     ...nftDataCondition,
-    //   //     claimedCount,
-    //   //   },
-    //   // ]);
-
-    //   return {
-    //     id: nftID,
-    //     ...nftDataInfo,
-    //     ...nftDataCondition,
-    //     claimedCount,
-    //   };
   }
 
   useEffect(() => {
