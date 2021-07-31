@@ -315,13 +315,17 @@ export default function NFTDetail({ data }) {
                           智能合约: {data.contract}
                         </a> */}
 
+                        <span className="mt-2 mr-2 text-sm font-semibold inline-block py-1 px-2  rounded text-orange-600 bg-orange-200">
+                          ID: {nftID}
+                        </span>
+
                         <span className="mt-2 text-sm font-semibold inline-block py-1 px-2  rounded text-emerald-600 bg-emerald-200 mr-2">
                           已领取/总数: {nftDetail.claimedCount} /{" "}
                           {nftDetail.nftCount}
                         </span>
 
                         {nftDetail.key && (
-                          <span className="mt-2 text-xs font-semibold inline-block py-1 px-2  rounded text-orange-600 bg-orange-200">
+                          <span className="mt-2 text-sm font-semibold inline-block py-1 px-2  rounded text-orange-600 bg-orange-200">
                             {nftDetail.tag}
                           </span>
                         )}

@@ -53,15 +53,10 @@ export default function NftList() {
       ? JSON.parse(nftData.info2)
       : nftDetailInitInfo2State;
 
-    // nft 已领取数量
-    let claimedCount = await bank1155Contract.tokenUserBalance(
-      NFTMintContract,
-      nftID,
-      account
-    );
+    let claimableCount = await nftContract.balanceOf(Bank1155Contract, nftID);
 
-    // console.log("claimedCount", parseBN(claimedCount));
-    claimedCount = parseBN(claimedCount);
+    // nft 已领取数量
+    let claimedCount = nftDataInfo.nftCount - claimableCount;
 
     if (nftDataInfo.imgUrl === "") {
       nftDataInfo.imgUrl =
