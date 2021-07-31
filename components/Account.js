@@ -13,6 +13,8 @@ const Account = ({ triedToEagerConnect }) => {
   // initialize metamask onboarding
   const onboarding = useRef();
 
+  console.log("account", account);
+
   useLayoutEffect(() => {
     onboarding.current = new MetaMaskOnboarding();
   }, []);
@@ -26,10 +28,10 @@ const Account = ({ triedToEagerConnect }) => {
     }
   }, [active, error]);
 
-  const ENSName = useENSName(account);
+  // const ENSName = useENSName(account);
 
   if (error) {
-    return null;
+    return "Use Matic Mainnet";
   }
 
   if (!triedToEagerConnect) {
@@ -80,7 +82,7 @@ const Account = ({ triedToEagerConnect }) => {
         rel: "noopener noreferrer",
       }}
     >
-      {ENSName || `${shortenHex(account, 4)}`}
+      {`${shortenHex(account, 4)}`}
     </a>
   );
 };
