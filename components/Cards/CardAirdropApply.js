@@ -7,7 +7,6 @@ import { useWeb3React } from "@web3-react/core";
 import useContract from "hooks/useContract";
 import { Airdrop as AirdropABI } from "constans/abi/Airdrop";
 import { IERC20 as IERC20ABI } from "constans/abi/IERC20";
-import { toAmount, toNum, parseUnit } from "libs/web3Util";
 import getContract from "libs/getContract";
 
 import { NFTMintContract, Bank1155Contract } from "libs/contracts";
@@ -15,7 +14,7 @@ import { NFTMintContract, Bank1155Contract } from "libs/contracts";
 import { DeDropsNFT as mintContractABI } from "constans/abi/DeDropsNFT";
 
 import { Bank1155 as Bank1155ABI } from "constans/abi/Bank1155";
-import { parseBN } from "libs/web3Util";
+import { parseBN, big, parseUnit, toAmount, toNum } from "libs/web3Util";
 
 // components
 
@@ -217,26 +216,32 @@ export default function CardSettings() {
       AirdropContract
     );
 
-    console.log("allowance", allowance);
+    console.log("allowance", allowance, toNum(allowance, 18));
 
     console.log("tokenAmount", airdrop.tokenAmount);
 
+    // const allowanceBN = parseUnit(allowance);
+
     airdrop.tokenAmountBN = parseUnit(airdrop.tokenAmount);
+
+    console.log("tokenAmountBN", airdrop.tokenAmountBN);
 
     // allowance >= 需要空投token数量
     if (allowance.gte(airdrop.tokenAmountBN)) {
-      console.log(
+      console.log("allowance > tokenAmount");
+      console.log([
         tokenAddrRef.current.value,
         airdrop.tokenAmount,
         JSON.stringify(info),
-        JSON.stringify({ airdrop, condition })
-      );
+        JSON.stringify({ airdrop, condition }),
+      ]);
 
       // return;
       // 提交上链
+
       const res = await airdropContractIns.drop(
         tokenAddrRef.current.value,
-        toAmount(airdrop.tokenAmount),
+        parseUnit(airdrop.tokenAmount),
         JSON.stringify(info),
         JSON.stringify({ airdrop, condition })
       );
@@ -520,7 +525,7 @@ export default function CardSettings() {
                     ref={tokenAddrRef}
                     type="text"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="0xeec596195470bb63843cf7d568ba14e0e4f6c6f4"
+                    defaultValue="0x9D8c588A1fddF2575266bEf1a6a479eA46faBdd9"
                   />
                 </div>
               </div>

@@ -211,11 +211,11 @@ export default function AirdropDetail() {
   }, [airdropDetail]);
 
   async function handleClaim() {
-    if ("sign" in claimStatus) {
-      if (claimStatus.claimed) {
-        return;
-      }
-
+    console.log(claimStatus);
+    if (claimStatus) {
+      // if (!AirdropDetail) {
+      //   return;
+      // }
       const sign = claimStatus.sign;
       const unsign = claimStatus.unsign;
 
@@ -223,8 +223,8 @@ export default function AirdropDetail() {
         unsign.token,
         unsign.owner,
         unsign.spender,
-        parseUnit(unsign.value),
-        big(unsign.deadline),
+        airdropDetail.airdrop.tokenAmount,
+        unsign.deadline,
         sign.v,
         sign.r,
         sign.s,
@@ -234,7 +234,7 @@ export default function AirdropDetail() {
         unsign.token,
         unsign.owner,
         unsign.spender,
-        parseUnit(unsign.value),
+        parseUnit(airdropDetail.airdrop.tokenAmount),
         big(unsign.deadline),
         sign.v,
         sign.r,
@@ -313,7 +313,7 @@ export default function AirdropDetail() {
             </p>
             <div className="flex flex-wrap py-8 mb-12">
               {nftDetailList.map((item) => (
-                <CardNFTItem data={item} />
+                <CardNFTItem key={item.id} data={item} />
               ))}
             </div>
           </div>

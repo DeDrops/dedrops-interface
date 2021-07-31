@@ -25,6 +25,7 @@ export default function NFTDetail({ data }) {
   const router = useRouter();
 
   const [claimStatus, setClaimStatus] = useState();
+  const [isClaimed, setIsClaimed] = useState(false);
 
   const nftID = router.query.id;
 
@@ -70,12 +71,12 @@ export default function NFTDetail({ data }) {
           console.log(res.data.data.actions["sushi-swap"]);
 
           // 当前地址是否已经领取
-          // if ("sign" in claimStatus) {
-          //   const isClaimed = await bank1155Contract.nonces(
-          //     claimStatus.sign.digeset
-          //   );
-          //   console.log("isClaimed", isClaimed);
-          // }
+          let accountNftCount = await nftContract.balanceOf(account, nftID);
+
+          console.log("accountNftCount", accountNftCount);
+          if (accountNftCount > 0) {
+            setIsClaimed(true);
+          }
         }
       } catch (e) {
         console.log("error checkNft");
@@ -83,7 +84,7 @@ export default function NFTDetail({ data }) {
     }
 
     checkNft();
-  }, [account, nftID]);
+  }, [nftContract, account, nftID]);
 
   useEffect(() => {
     (async () => {
@@ -101,15 +102,22 @@ export default function NFTDetail({ data }) {
           ? JSON.parse(nftData.info2)
           : nftDetailInitInfo2State;
 
-        // nft 已领取数量
-        let claimedCount = await bank1155Contract.tokenUserBalance(
-          NFTMintContract,
-          nftID,
-          account
+        // nft 待领取数量
+        // let claimedCount = await bank1155Contract.tokenUserBalance(
+        //   NFTMintContract,
+        //   nftID,
+        //   account
+        // );
+
+        let claimableCount = await nftContract.balanceOf(
+          Bank1155Contract,
+          nftID
         );
 
-        console.log("claimedCount", parseBN(claimedCount));
-        claimedCount = parseBN(claimedCount);
+        let claimedCount = nftDataInfo.nftCount - claimableCount;
+
+        // console.log("claimedCount", parseBN(claimedCount));
+        // claimedCount = parseBN(claimedCount);
 
         if (nftDataInfo.imgUrl === "") {
           nftDataInfo.imgUrl =
@@ -140,7 +148,7 @@ export default function NFTDetail({ data }) {
     const unsign = claimStatus.unsign;
 
     console.log([
-      Bank1155Contract,
+      NFTMintContract,
       unsign.id,
       unsign.owner,
       unsign.spender,
@@ -151,7 +159,7 @@ export default function NFTDetail({ data }) {
     ]);
 
     const res = await bank1155Contract.claim(
-      Bank1155Contract,
+      NFTMintContract,
       big(unsign.id),
       unsign.owner,
       unsign.spender,
@@ -254,20 +262,31 @@ export default function NFTDetail({ data }) {
 
                   <div className="w-full mt-6 px-4">
                     <div className="relative w-full mb-3 px-12">
-                      <button
-                        onClick={handleClaim}
-                        className={
-                          (claimStatus && claimStatus.match
-                            ? "bg-emerald-500 "
-                            : "bg-red-500") +
-                          " text-white block w-full mr-1active:bg-emerald-500 font-bold uppercase text-lg px-12 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                        }
-                        type="button"
-                      >
-                        {claimStatus && claimStatus.match
-                          ? "领取"
-                          : "没有资格领取"}
-                      </button>
+                      {isClaimed ? (
+                        <button
+                          className={
+                            "bg-red-50 text-white block w-full mr-1active:bg-emerald-500 font-bold uppercase text-lg px-12 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                          }
+                          type="button"
+                        >
+                          你已经领取过了
+                        </button>
+                      ) : (
+                        <button
+                          onClick={handleClaim}
+                          className={
+                            (claimStatus && claimStatus.match
+                              ? "bg-emerald-500 "
+                              : "bg-red-500") +
+                            " text-white block w-full mr-1active:bg-emerald-500 font-bold uppercase text-lg px-12 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                          }
+                          type="button"
+                        >
+                          {claimStatus && claimStatus.match
+                            ? "领取"
+                            : "没有资格领取"}
+                        </button>
+                      )}
                     </div>
                   </div>
 
@@ -296,7 +315,7 @@ export default function NFTDetail({ data }) {
                           智能合约: {data.contract}
                         </a> */}
 
-                        <span className="text-xs font-semibold inline-block py-1 px-2  rounded text-emerald-600 bg-emerald-200 mr-2">
+                        <span className="mt-2 text-sm font-semibold inline-block py-1 px-2  rounded text-emerald-600 bg-emerald-200 mr-2">
                           已领取/总数: {nftDetail.claimedCount} /{" "}
                           {nftDetail.nftCount}
                         </span>
