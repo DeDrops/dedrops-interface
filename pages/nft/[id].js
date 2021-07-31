@@ -4,12 +4,10 @@ import { useRouter } from "next/router";
 
 import { mintConditions } from "libs/nftConfig";
 
-import IndexNavbar from "components/Navbars/IndexNavbar.js";
+import MainLayout from "layouts/main";
 import AirdropsCardTable from "components/Cards/CardAirdropsTable";
 
 import { fakeData } from "libs/nftConfig";
-
-import Footer from "components/Footers/Footer.js";
 
 import { Bank1155Contract, NFTMintContract } from "libs/contracts";
 import { useWeb3React } from "@web3-react/core";
@@ -100,8 +98,6 @@ export default function NFTDetail({ data }) {
 
   return (
     <>
-      <IndexNavbar fixed />
-
       <section className="header relative pt-24 items-center flex">
         <div className="container mx-auto items-center flex flex-wrap">
           <div className="w-full px-4 pt-8">
@@ -219,8 +215,6 @@ export default function NFTDetail({ data }) {
           </div>
         </div>
       </section>
-
-      <Footer />
     </>
   );
 }
@@ -229,3 +223,5 @@ NFTDetail.defaultProps = {
   data: fakeData[0],
   tag: "dedrops",
 };
+
+NFTDetail.layout = MainLayout;

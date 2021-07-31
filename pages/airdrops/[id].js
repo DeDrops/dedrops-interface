@@ -1,11 +1,9 @@
 /* eslint-disable react/jsx-no-target-blank */
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import IndexNavbar from "components/Navbars/IndexNavbar.js";
 
 import CardNFTItem from "components/Cards/CardNFTItem";
-
-import Footer from "components/Footers/Footer.js";
+import MainLayout from "layouts/main";
 
 import { NFTMintContract, Bank1155Contract } from "libs/contracts";
 import { useWeb3React } from "@web3-react/core";
@@ -21,7 +19,7 @@ import { DeDropsNFT as mintContractABI } from "constans/abi/DeDropsNFT";
 import { Bank1155 as Bank1155ABI } from "constans/abi/Bank1155";
 import { parseBN } from "libs/web3Util";
 
-export default function Index() {
+export default function AirdropDetail() {
   const { library, account } = useWeb3React();
 
   const airdropDetailInitInfoState = {
@@ -185,8 +183,6 @@ export default function Index() {
 
   return (
     <>
-      <IndexNavbar fixed />
-
       <div className="flex pt-32 flex-wrap bg-white">
         {airdropDetail && airdropDetail.airdrop ? (
           <div className="w-full px-12">
@@ -257,8 +253,8 @@ export default function Index() {
           </div>
         )}
       </div>
-
-      <Footer />
     </>
   );
 }
+
+AirdropDetail.layout = MainLayout;

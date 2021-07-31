@@ -2,11 +2,10 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
-import IndexNavbar from "components/Navbars/IndexNavbar.js";
+import MainLayout from "layouts/main";
 import AirdropsTabs from "components/Tabs/AirdropsTabs";
 import AirdropsCardTable from "components/Cards/CardAirdropsTable";
 
-import Footer from "components/Footers/Footer.js";
 import { tabList } from "libs/airdropConfig";
 
 import { useWeb3React } from "@web3-react/core";
@@ -154,8 +153,6 @@ export default function Index() {
 
   return (
     <>
-      <IndexNavbar fixed />
-
       <section className="header relative pt-24 items-center flex">
         <div className="container mx-auto items-center flex flex-wrap">
           <div className="w-full px-4">
@@ -197,7 +194,8 @@ export default function Index() {
           </div>
         </div>
       </section>
-      <Footer />
     </>
   );
 }
+
+Index.layout = MainLayout;
