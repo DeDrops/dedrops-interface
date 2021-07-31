@@ -16,7 +16,6 @@ import useContract from "hooks/useContract";
 import { AirdropContract } from "libs/contracts";
 
 import { Airdrop as AirdropContractABI } from "constans/abi/Airdrop";
-import { Bank1155 as Bank1155ABI } from "constans/abi/Bank1155";
 
 import { parseBN } from "libs/web3Util";
 
@@ -67,10 +66,21 @@ const renderTabsContent = (tabKey, setOpenTab, airdropList) => {
       >
         <div className="flex flex-wrap items-center pt-2">
           <div className="w-full px-4">
-            <AirdropsCardTable
-              typeKey={item.key}
-              list={item.key === "ongoing" ? airdropList : []}
-            />
+            {airdropList.length > 0 ? (
+              <AirdropsCardTable
+                typeKey={item.key}
+                list={item.key === "ongoing" ? airdropList : []}
+              />
+            ) : (
+              <div className="my-32 mx-auto max-w-sm text-center relative z-50 top-0">
+                <div className="block mb-4">
+                  <i className="fas fa-circle-notch animate-spin text-blueGray-400 mx-auto text-6xl"></i>
+                </div>
+                <h4 className="text-lg font-medium text-blueGray-400">
+                  Loading...
+                </h4>
+              </div>
+            )}
           </div>
         </div>
       </div>

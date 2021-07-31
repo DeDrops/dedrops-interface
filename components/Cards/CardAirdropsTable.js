@@ -101,7 +101,7 @@ export default function AirdropsCardTable({ color, typeKey, list }) {
           (color === "light" ? "bg-white" : "bg-blueGray-700 text-white")
         }
       >
-        {typeKey && (
+        {/* {typeKey && (
           <div className="rounded-t mb-0 px-4 py-3 border-0">
             <div className="flex flex-wrap items-center">
               <div className="relative w-full px-4 max-w-full flex-grow flex-1">
@@ -109,7 +109,7 @@ export default function AirdropsCardTable({ color, typeKey, list }) {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         <div className="block w-full overflow-x-auto">
           {/* Projects table */}
@@ -120,21 +120,22 @@ export default function AirdropsCardTable({ color, typeKey, list }) {
               </tr>
             </thead>
             <tbody>
-              {list.length > 0 ? (
-                list.map((data, index) => renderTableData(typeKey, data, index))
-              ) : (
-                <td
-                  colSpan="5"
-                  className="my-32 mx-auto py-12 max-w-sm text-center relative z-50 top-0"
-                >
-                  <div className="block mb-4">
-                    <i className="fas fa-circle-notch animate-spin text-blueGray-400 mx-auto text-6xl"></i>
-                  </div>
-                  <h4 className="text-lg font-medium text-blueGray-400">
-                    Loading...
-                  </h4>
-                </td>
-              )}
+              {list.length > 0
+                ? list.map((data, index) =>
+                    renderTableData(typeKey, data, index)
+                  )
+                : // <td
+                  //   colSpan="5"
+                  //   className="my-32 mx-auto py-12 max-w-sm text-center relative z-50 top-0"
+                  // >
+                  //   <div className="block mb-4">
+                  //     <i className="fas fa-circle-notch animate-spin text-blueGray-400 mx-auto text-6xl"></i>
+                  //   </div>
+                  //   <h4 className="text-lg font-medium text-blueGray-400">
+                  //     Loading...
+                  //   </h4>
+                  // </td>
+                  null}
             </tbody>
           </table>
         </div>
