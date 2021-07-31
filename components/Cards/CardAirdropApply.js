@@ -176,7 +176,9 @@ export default function CardSettings() {
 
     const airdrop = {
       token: tokenAddrRef.current.value,
+      // 空投token 总数
       tokenAmount: tokenAmountRef.current.value,
+      // 可领取空投的地址数
       tokenClaimableCount: tokenClaimableCountRef.current.value,
       startTime: startTimeRef.current.value,
       endTime: endTimeRef.current.value,
@@ -215,13 +217,17 @@ export default function CardSettings() {
       AirdropContract
     );
 
-    console.log("allowance", toNum(allowance));
-    console.log("tokenAmount", toNum(airdrop.tokenAmount));
+    console.log("allowance", allowance);
 
-    if (toNum(allowance) >= toNum(airdrop.tokenAmount)) {
+    console.log("tokenAmount", airdrop.tokenAmount);
+
+    airdrop.tokenAmountBN = parseUnit(airdrop.tokenAmount);
+
+    // allowance >= 需要空投token数量
+    if (allowance.gte(airdrop.tokenAmountBN)) {
       console.log(
         tokenAddrRef.current.value,
-        toAmount(airdrop.tokenAmount, 18),
+        airdrop.tokenAmount,
         JSON.stringify(info),
         JSON.stringify({ airdrop, condition })
       );
@@ -230,7 +236,7 @@ export default function CardSettings() {
       // 提交上链
       const res = await airdropContractIns.drop(
         tokenAddrRef.current.value,
-        toAmount(airdrop.tokenAmount, 18),
+        toAmount(airdrop.tokenAmount),
         JSON.stringify(info),
         JSON.stringify({ airdrop, condition })
       );
@@ -273,17 +279,17 @@ export default function CardSettings() {
   };
 
   //平均每个地址获得空投TOKEN 数量
-  const perAddrToken = () => {
-    try {
-      let tokenAmount = Number(tokenAmountRef.current.value);
-      let tokenClaimableCount = Number(tokenClaimableCountRef.current.value);
-      console.log("perAddrToken", tokenAmount / tokenClaimableCount);
-      return tokenAmount / tokenClaimableCount;
-    } catch (e) {
-      console.log("perAddrToken error");
-      return "";
-    }
-  };
+  // const perAddrToken = () => {
+  //   try {
+  //     let tokenAmount = Number(tokenAmountRef.current.value);
+  //     let tokenClaimableCount = Number(tokenClaimableCountRef.current.value);
+  //     console.log("perAddrToken", tokenAmount / tokenClaimableCount);
+  //     return tokenAmount / tokenClaimableCount;
+  //   } catch (e) {
+  //     console.log("perAddrToken error");
+  //     return "";
+  //   }
+  // };
 
   return (
     <>
@@ -514,7 +520,7 @@ export default function CardSettings() {
                     ref={tokenAddrRef}
                     type="text"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="0x67a32987a8eaa0644702c362b53b8eebd126c20b"
+                    defaultValue="0xeec596195470bb63843cf7d568ba14e0e4f6c6f4"
                   />
                 </div>
               </div>

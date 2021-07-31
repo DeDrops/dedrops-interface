@@ -17,10 +17,15 @@ import _ from "lodash";
 import useContract from "hooks/useContract";
 import { DeDropsNFT as mintContractABI } from "constans/abi/DeDropsNFT";
 import { Bank1155 as Bank1155ABI } from "constans/abi/Bank1155";
-import { parseBN } from "libs/web3Util";
+import { big, parseBN, parseUnit } from "libs/web3Util";
+
+import { get } from "libs/api";
 
 export default function NFTDetail({ data }) {
   const router = useRouter();
+
+  const [claimStatus, setClaimStatus] = useState();
+  const [isClaimed, setIsClaimed] = useState(false);
 
   const nftID = router.query.id;
 
@@ -49,6 +54,35 @@ export default function NFTDetail({ data }) {
 
   // bank 1155 contract instance
   const bank1155Contract = useContract(Bank1155Contract, Bank1155ABI, account);
+
+  // check 当前 account 是否有资格领取 NFT
+  useEffect(() => {
+    async function checkNft() {
+      try {
+        const res = await get("/address/checkNft", {
+          address: account,
+          id: nftID,
+        });
+
+        console.log("actions", res.data.data);
+        if (res.data.code === 0) {
+          setClaimStatus(res.data.data);
+
+          // 当前地址是否已经领取
+          if ("sign" in claimStatus) {
+            const isClaimed = await bank1155Contract.nonces(
+              claimStatus.sign.digeset
+            );
+            console.log("isClaimed", isClaimed);
+          }
+        }
+      } catch (e) {
+        console.log("error checkNft");
+      }
+    }
+
+    checkNft();
+  }, [account, nftID]);
 
   useEffect(() => {
     (async () => {
@@ -96,6 +130,37 @@ export default function NFTDetail({ data }) {
     })();
   }, [nftID, nftContract, account, bank1155Contract]);
 
+  async function handleClaim() {
+    const sign = claimStatus.sign;
+    const unsign = claimStatus.unsign;
+
+    console.log(
+      Bank1155Contract,
+      big(unsign.id),
+      unsign.owner,
+      unsign.spender,
+      big(unsign.deadline),
+      sign.v,
+      sign.r,
+      sign.s
+    );
+
+    const res = await bank1155Contract.claim(
+      Bank1155Contract,
+      big(unsign.id),
+      unsign.owner,
+      unsign.spender,
+      big(unsign.deadline),
+      sign.v,
+      sign.r,
+      sign.s
+    );
+
+    if (res.hash) {
+      window.alert("提交成功,等待上链...");
+    }
+  }
+
   return (
     <>
       <section className="header relative pt-24 items-center flex">
@@ -124,9 +189,24 @@ export default function NFTDetail({ data }) {
                               </span>
                             </div>
                             <div className="ml-4 flex-shrink-0">
-                              <span className="bg-emerald-500 text-white font-bold  text-xs px-4 py-2 rounded  outline-none mr-1 mb-1 ">
-                                满足
-                              </span>
+                              {claimStatus && (
+                                <span
+                                  className={
+                                    (claimStatus &&
+                                    claimStatus.actions &&
+                                    claimStatus.actions[item.key].match
+                                      ? "bg-emerald-500"
+                                      : "bg-red-500") +
+                                    " text-white font-bold  text-xs px-4 py-2 rounded  outline-none mr-1 mb-1 "
+                                  }
+                                >
+                                  {claimStatus &&
+                                  claimStatus.actions &&
+                                  claimStatus.actions[item.key].match
+                                    ? "满足"
+                                    : "不满足"}
+                                </span>
+                              )}
                             </div>
                           </li>
                         ))}
@@ -142,9 +222,24 @@ export default function NFTDetail({ data }) {
                             </span>
                           </div>
                           <div className="ml-4 flex-shrink-0">
-                            <span className="bg-emerald-500 text-white font-bold  text-xs px-4 py-2 rounded  outline-none mr-1 mb-1 ">
-                              满足
-                            </span>
+                            {claimStatus && (
+                              <span
+                                className={
+                                  (claimStatus &&
+                                  claimStatus.money &&
+                                  claimStatus.money.match
+                                    ? "bg-emerald-500"
+                                    : "bg-red-500") +
+                                  "  text-white font-bold  text-xs px-4 py-2 rounded  outline-none mr-1 mb-1 "
+                                }
+                              >
+                                {claimStatus &&
+                                claimStatus.money &&
+                                claimStatus.money.match
+                                  ? "满足"
+                                  : "不满足"}
+                              </span>
+                            )}
                           </div>
                         </li>
                       ) : null}
@@ -154,10 +249,18 @@ export default function NFTDetail({ data }) {
                   <div className="w-full mt-6 px-4">
                     <div className="relative w-full mb-3 px-12">
                       <button
-                        className="bg-emerald-500 text-white block w-full mr-1active:bg-emerald-500 font-bold uppercase text-lg px-12 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                        onClick={handleClaim}
+                        className={
+                          (claimStatus && claimStatus.match
+                            ? "bg-emerald-500 "
+                            : "bg-red-500") +
+                          " text-white block w-full mr-1active:bg-emerald-500 font-bold uppercase text-lg px-12 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                        }
                         type="button"
                       >
-                        领取
+                        {claimStatus && claimStatus.match
+                          ? "领取"
+                          : "没有资格领取"}
                       </button>
                     </div>
                   </div>
