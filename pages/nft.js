@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import NFTTabs from "components/Tabs/NFTTabs";
 import CardNFTItem from "components/Cards/CardNFTItem";
-import MainLayout from "layouts/main";
+import MainLayout from "layouts/Main";
 
 import { NFTMintContract, Bank1155Contract } from "libs/contracts";
 import { useWeb3React } from "@web3-react/core";

@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 
 import { mintConditions } from "libs/nftConfig";
 
-import MainLayout from "layouts/main";
+import MainLayout from "layouts/Main";
 import AirdropsCardTable from "components/Cards/CardAirdropsTable";
 
 import { fakeData } from "libs/nftConfig";
