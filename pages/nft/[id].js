@@ -25,7 +25,6 @@ export default function NFTDetail({ data }) {
   const router = useRouter();
 
   const [claimStatus, setClaimStatus] = useState();
-  const [isClaimed, setIsClaimed] = useState(false);
 
   const nftID = router.query.id;
 
@@ -68,13 +67,15 @@ export default function NFTDetail({ data }) {
         if (res.data.code === 0) {
           setClaimStatus(res.data.data);
 
+          console.log(res.data.data.actions["sushi-swap"]);
+
           // 当前地址是否已经领取
-          if ("sign" in claimStatus) {
-            const isClaimed = await bank1155Contract.nonces(
-              claimStatus.sign.digeset
-            );
-            console.log("isClaimed", isClaimed);
-          }
+          // if ("sign" in claimStatus) {
+          //   const isClaimed = await bank1155Contract.nonces(
+          //     claimStatus.sign.digeset
+          //   );
+          //   console.log("isClaimed", isClaimed);
+          // }
         }
       } catch (e) {
         console.log("error checkNft");
@@ -131,19 +132,23 @@ export default function NFTDetail({ data }) {
   }, [nftID, nftContract, account, bank1155Contract]);
 
   async function handleClaim() {
+    if (!("sign" in claimStatus)) {
+      return;
+    }
+
     const sign = claimStatus.sign;
     const unsign = claimStatus.unsign;
 
-    console.log(
+    console.log([
       Bank1155Contract,
-      big(unsign.id),
+      unsign.id,
       unsign.owner,
       unsign.spender,
-      big(unsign.deadline),
+      unsign.deadline,
       sign.v,
       sign.r,
-      sign.s
-    );
+      sign.s,
+    ]);
 
     const res = await bank1155Contract.claim(
       Bank1155Contract,
@@ -176,7 +181,8 @@ export default function NFTDetail({ data }) {
 
                   <div className="mt-2">
                     <ul className="border border-blueGray-200 rounded-md divide-y divide-gray-200">
-                      {nftDetail.actions &&
+                      {nftDetail &&
+                        nftDetail.actions &&
                         nftDetail.actions.map((item) => (
                           <li
                             key={item.key}
@@ -193,7 +199,7 @@ export default function NFTDetail({ data }) {
                                 <span
                                   className={
                                     (claimStatus &&
-                                    claimStatus.actions &&
+                                    claimStatus.actions[item.key] &&
                                     claimStatus.actions[item.key].match
                                       ? "bg-emerald-500"
                                       : "bg-red-500") +
@@ -201,7 +207,7 @@ export default function NFTDetail({ data }) {
                                   }
                                 >
                                   {claimStatus &&
-                                  claimStatus.actions &&
+                                  claimStatus.actions[item.key] &&
                                   claimStatus.actions[item.key].match
                                     ? "满足"
                                     : "不满足"}

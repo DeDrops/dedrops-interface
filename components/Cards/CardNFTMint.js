@@ -310,7 +310,7 @@ export default function CardNFTMint() {
                       placeholder="主流资产总额"
                     />
 
-                    <span class="px-2">USD</span>
+                    <span className="px-2">USD</span>
                   </div>
                 </div>
               </div>

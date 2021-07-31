@@ -161,6 +161,27 @@ export default function AirdropDetail() {
     }
   }, [airdropID, AirdropContractInstance]);
 
+  // check 当前 account 是否有资格领取 NFT
+  useEffect(() => {
+    async function checkNft() {
+      try {
+        const res = await get("/address/checkToken", {
+          address: account,
+          id: airdropID,
+        });
+
+        console.log("actions", res.data.data);
+        if (res.data.code === 0) {
+          setClaimStatus(res.data.data);
+        }
+      } catch (e) {
+        console.log("error checkNft");
+      }
+    }
+
+    checkNft();
+  }, [account, airdropID]);
+
   // get nft list
   useEffect(() => {
     (async () => {
@@ -190,33 +211,39 @@ export default function AirdropDetail() {
   }, [airdropDetail]);
 
   async function handleClaim() {
-    const sign = claimStatus.sign;
-    const unsign = claimStatus.unsign;
+    if ("sign" in claimStatus) {
+      if (claimStatus.claimed) {
+        return;
+      }
 
-    console.log(
-      Bank1155Contract,
-      big(unsign.id),
-      unsign.owner,
-      unsign.spender,
-      big(unsign.deadline),
-      sign.v,
-      sign.r,
-      sign.s
-    );
+      const sign = claimStatus.sign;
+      const unsign = claimStatus.unsign;
 
-    const res = await bank1155Contract.claim(
-      Bank1155Contract,
-      big(unsign.id),
-      unsign.owner,
-      unsign.spender,
-      big(unsign.deadline),
-      sign.v,
-      sign.r,
-      sign.s
-    );
+      console.log([
+        unsign.token,
+        unsign.owner,
+        unsign.spender,
+        parseUnit(unsign.value),
+        big(unsign.deadline),
+        sign.v,
+        sign.r,
+        sign.s,
+      ]);
 
-    if (res.hash) {
-      window.alert("提交成功,等待上链...");
+      const res = await bank20Contract.claim(
+        unsign.token,
+        unsign.owner,
+        unsign.spender,
+        parseUnit(unsign.value),
+        big(unsign.deadline),
+        sign.v,
+        sign.r,
+        sign.s
+      );
+
+      if (res.hash) {
+        window.alert("提交成功,等待上链...");
+      }
     }
   }
 
