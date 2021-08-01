@@ -23,6 +23,14 @@ export const tabList = [
 
 export const mintConditions = [
   {
+    key: "quickswap-swap",
+    text: "Quickswap 交易",
+  },
+  {
+    key: "quickswap-addlp",
+    text: "Quickswap 添加流动性",
+  },
+  {
     key: "sushi-swap",
     text: "Sushiswap 交易",
   },
