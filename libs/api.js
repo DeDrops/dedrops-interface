@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASEURL = "http://api.dedrops.xyz";
+const API_BASEURL = "https://api.dedrops.xyz";
 
 export const get = async (path, params) => {
   const res = await axios.get(API_BASEURL + path, {
