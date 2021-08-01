@@ -68,7 +68,7 @@ export default function NFTDetail({ data }) {
         if (res.data.code === 0) {
           setClaimStatus(res.data.data);
 
-          console.log(res.data.data.actions["sushi-swap"]);
+          // console.log(res.data.data.actions["sushi-swap"]);
 
           // 当前地址是否已经领取
           let accountNftCount = await nftContract.balanceOf(account, nftID);
@@ -265,7 +265,7 @@ export default function NFTDetail({ data }) {
                       {isClaimed ? (
                         <button
                           className={
-                            "bg-red-50 text-white block w-full mr-1active:bg-emerald-500 font-bold uppercase text-lg px-12 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                            "bg-red-500 text-white block w-full mr-1active:bg-emerald-500 font-bold uppercase text-lg px-12 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                           }
                           type="button"
                         >

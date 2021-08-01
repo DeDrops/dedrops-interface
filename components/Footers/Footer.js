@@ -32,10 +32,7 @@ export default function Footer() {
                     </button>
                   </a>
 
-                  <a
-                    href="https://github.com/DeDrops/dedrops-interface"
-                    target="__blank"
-                  >
+                  <a href="https://github.com/DeDrops" target="__blank">
                     <button
                       className="bg-white text-blueGray-800 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2"
                       type="button"
